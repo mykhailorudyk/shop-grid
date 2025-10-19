@@ -17,6 +17,6 @@ public interface ProductService {
 
     ProductResponseDto updateProduct(UUID id, UpdateProductRequestDto requestDto);
 
-    String deleteProduct(UUID id);
+    void deleteProduct(UUID id);
 
 }

@@ -1,8 +1,11 @@
 package com.rudyk.shopgrid.productsservice.service.impl;
 
+import com.rudyk.shopgrid.common.exception.ResourceNotFoundException;
 import com.rudyk.shopgrid.productsservice.dto.CreateProductRequestDto;
 import com.rudyk.shopgrid.productsservice.dto.ProductResponseDto;
 import com.rudyk.shopgrid.productsservice.dto.UpdateProductRequestDto;
+import com.rudyk.shopgrid.productsservice.entity.Product;
+import com.rudyk.shopgrid.productsservice.mapper.ProductMapper;
 import com.rudyk.shopgrid.productsservice.repository.ProductRepository;
 import com.rudyk.shopgrid.productsservice.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -19,28 +22,38 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public ProductResponseDto getProductById(UUID id) {
-        productRepository.findById(id)
-                .orElseThrow();
-        return null;
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        return ProductMapper.mapToDto(product);
     }
 
     @Override
     public List<ProductResponseDto> getAllProducts() {
-        return List.of();
+        return productRepository.findAll().stream()
+                .map(ProductMapper::mapToDto)
+                .toList();
     }
 
     @Override
     public ProductResponseDto createProduct(CreateProductRequestDto requestDto) {
-        return null;
+        Product product = ProductMapper.mapToProduct(requestDto);
+        productRepository.save(product);
+        return ProductMapper.mapToDto(product);
     }
 
     @Override
     public ProductResponseDto updateProduct(UUID id, UpdateProductRequestDto requestDto) {
-        return null;
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        ProductMapper.mapToProduct(requestDto, product);
+        productRepository.save(product);
+        return ProductMapper.mapToDto(product);
     }
 
     @Override
-    public String deleteProduct(UUID id) {
-        return "";
+    public void deleteProduct(UUID id) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        productRepository.delete(product);
     }
 }

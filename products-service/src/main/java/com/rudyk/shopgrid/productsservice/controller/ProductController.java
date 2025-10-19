@@ -3,6 +3,9 @@ package com.rudyk.shopgrid.productsservice.controller;
 import com.rudyk.shopgrid.productsservice.dto.CreateProductRequestDto;
 import com.rudyk.shopgrid.productsservice.dto.ProductResponseDto;
 import com.rudyk.shopgrid.productsservice.dto.UpdateProductRequestDto;
+import com.rudyk.shopgrid.productsservice.service.ProductService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,31 +21,40 @@ import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/products")
+@RequiredArgsConstructor
 public class ProductController {
+
+    private final ProductService productService;
 
     @GetMapping("/{id}")
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable("id") UUID id) {
-
+        ProductResponseDto productDTO = productService.getProductById(id);
+        return ResponseEntity.ok(productDTO);
     }
 
     @GetMapping
     public ResponseEntity<List<ProductResponseDto>> getAllProducts() {
-
+        List<ProductResponseDto> productsDTOs = productService.getAllProducts();
+        return ResponseEntity.ok(productsDTOs);
     }
 
     @PostMapping
     public ResponseEntity<ProductResponseDto> createProduct(@RequestBody CreateProductRequestDto requestDto) {
-
+        ProductResponseDto productDTO = productService.createProduct(requestDto);
+        return new ResponseEntity<>(productDTO, HttpStatus.CREATED);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<ProductResponseDto> updateProduct(@RequestBody UpdateProductRequestDto requestDto) {
-
+    public ResponseEntity<ProductResponseDto> updateProduct(@PathVariable("id") UUID id,
+                                                            @RequestBody UpdateProductRequestDto requestDto) {
+        ProductResponseDto productDTO = productService.updateProduct(id, requestDto);
+        return ResponseEntity.ok(productDTO);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteProduct(@PathVariable("id") UUID id) {
-
+    public ResponseEntity<Void> deleteProduct(@PathVariable("id") UUID id) {
+        productService.deleteProduct(id);
+        return ResponseEntity.ok().build();
     }
 
 }
