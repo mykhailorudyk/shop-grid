@@ -1,0 +1,54 @@
+services:
+  shopgrid-products-postgres:
+    container_name: shopgrid-products-postgres
+    image: postgres:18-alpine
+    ports:
+      - "5438:5432"
+    environment:
+      - POSTGRES_USER=mike
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=products_db
+    volumes:
+      - shopgrid-products-postgres-volume:/var/lib/postgresql/data
+    networks:
+      - shopgrid-network
+
+  shopgrid-orders-postgres:
+    container_name: shopgrid-orders-postgres
+    image: postgres:18-alpine
+    ports:
+      - "5439:5432"
+    environment:
+      - POSTGRES_USER=mike
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=orders_db
+    volumes:
+      - shopgrid-orders-postgres-volume:/var/lib/postgresql/data
+    networks:
+      - shopgrid-network
+
+  shopgrid-users-postgres:
+    container_name: shopgrid-users-postgres
+    image: postgres:18-alpine
+    ports:
+      - "5440:5432"
+    environment:
+      - POSTGRES_USER=mike
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=users_db
+    volumes:
+      - shopgrid-users-postgres-volume:/var/lib/postgresql/data
+    networks:
+      - shopgrid-network
+
+networks:
+  shopgrid-network:
+    driver: bridge
+
+volumes:
+  shopgrid-products-postgres-volume:
+    driver: local
+  shopgrid-orders-postgres-volume:
+    driver: local
+  shopgrid-users-postgres-volume:
+    driver: local

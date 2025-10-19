@@ -1,0 +1,55 @@
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+.kotlin
+
+### IntelliJ IDEA ###
+.idea/modules.xml
+.idea/jarRepositories.xml
+.idea/compiler.xml
+.idea/libraries/
+*.iws
+*.iml
+*.ipr
+
+### Eclipse ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Mac OS ###
+.DS_Store
+/users-service/mvnw
+/users-service/mvnw.cmd
+/users-service/.gitattributes
+/users-service/.gitignore
+/users-service/.mvn/
+/products-service/.gitattributes
+/products-service/.gitignore
+/products-service/mvnw
+/products-service/mvnw.cmd
+/products-service/.mvn/
+/orders-service/.mvn/
+/orders-service/.gitattributes
+/orders-service/.gitignore
+/orders-service/mvnw
+/orders-service/mvnw.cmd
+/.idea/

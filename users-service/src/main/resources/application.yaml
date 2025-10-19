@@ -1,0 +1,17 @@
+server:
+  port: 8090
+
+spring:
+  application:
+    name: users-service
+  datasource:
+    url: jdbc:postgresql://localhost:5440/users_db
+    username: mike
+    password: password
+  jpa:
+    properties:
+      hibernate:
+        format_sql: true
+        show_sql: true
+    hibernate:
+      ddl-auto: create
