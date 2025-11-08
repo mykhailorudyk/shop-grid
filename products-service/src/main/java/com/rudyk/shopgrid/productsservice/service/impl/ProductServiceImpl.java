@@ -28,6 +28,13 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
+    public Boolean isProductAvailable(UUID id, Integer quantity) {
+        Product product = productRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Product", "id", id));
+        return product.getQuantityInStock() >= quantity;
+    }
+
+    @Override
     public List<ProductResponseDto> getAllProducts() {
         return productRepository.findAll().stream()
                 .map(ProductMapper::mapToDto)

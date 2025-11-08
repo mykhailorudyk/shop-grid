@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -30,6 +31,12 @@ public class ProductController {
     public ResponseEntity<ProductResponseDto> getProductById(@PathVariable("id") UUID id) {
         ProductResponseDto productDTO = productService.getProductById(id);
         return ResponseEntity.ok(productDTO);
+    }
+
+    @GetMapping("/{id}/availability")
+    public ResponseEntity<Boolean> getAvailability(@PathVariable("id") UUID id, @RequestParam("quantity") Integer quantity) {
+        Boolean productAvailable = productService.isProductAvailable(id, quantity);
+        return ResponseEntity.ok(productAvailable);
     }
 
     @GetMapping

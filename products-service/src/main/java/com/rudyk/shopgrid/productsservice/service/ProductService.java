@@ -11,6 +11,8 @@ public interface ProductService {
 
     ProductResponseDto getProductById(UUID id);
 
+    Boolean isProductAvailable(UUID id, Integer quantity);
+
     List<ProductResponseDto> getAllProducts();
 
     ProductResponseDto createProduct(CreateProductRequestDto requestDto);
