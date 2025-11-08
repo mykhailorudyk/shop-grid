@@ -16,6 +16,13 @@ spring:
     hibernate:
       ddl-auto: create
 
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/ShopGrid
+          jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
+
 app:
   services:
     products:
