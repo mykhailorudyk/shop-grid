@@ -1,6 +1,5 @@
 package com.rudyk.shopgrid.ordersservice.client.product;
 
-import com.rudyk.shopgrid.ordersservice.service.impl.OrdersServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,11 +11,11 @@ import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class ProductServiceClient {
+public class ProductsServiceClient {
 
     public static final String PRODUCTS_SERVICE_URL = "http://localhost:8088/api/v1/products/";
     private final WebClient webClient;
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProductServiceClient.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(ProductsServiceClient.class);
 
     public boolean checkForProductAvailability(UUID productId, Integer quantity) {
         String url = PRODUCTS_SERVICE_URL + "{id}/availability?quantity={quantity}";

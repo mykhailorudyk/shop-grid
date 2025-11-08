@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/v1/orders")
@@ -28,23 +29,23 @@ public class OrdersController {
     }
 
     @GetMapping("/{orderId}")
-    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("orderId") Long orderId) {
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable("orderId") UUID orderId) {
         return ResponseEntity.ok().body(ordersService.getOrderById(orderId));
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@PathVariable("userId") Long userId) {
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@PathVariable("userId") UUID userId) {
         return ResponseEntity.ok(ordersService.getOrdersByUserId(userId));
     }
 
     @PostMapping("{id}/complete")
-    public ResponseEntity<Void> completeOrder(@PathVariable("id") Long orderId) {
+    public ResponseEntity<Void> completeOrder(@PathVariable("id") UUID orderId) {
         ordersService.completeOrder(orderId);
         return ResponseEntity.ok().build();
     }
 
     @PostMapping("{id}/cancel")
-    public ResponseEntity<Void> cancelOrder(@PathVariable("id") Long orderId) {
+    public ResponseEntity<Void> cancelOrder(@PathVariable("id") UUID orderId) {
         ordersService.cancelOrder(orderId);
         return ResponseEntity.ok().build();
     }

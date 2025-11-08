@@ -4,16 +4,17 @@ import com.rudyk.shopgrid.ordersservice.dto.CreateOrderRequestDto;
 import com.rudyk.shopgrid.ordersservice.dto.OrderResponseDto;
 
 import java.util.List;
+import java.util.UUID;
 
 public interface OrdersService {
 
     OrderResponseDto createOrder(CreateOrderRequestDto requestDto);
 
-    OrderResponseDto getOrderById(Long orderId);
+    OrderResponseDto getOrderById(UUID orderId);
 
-    List<OrderResponseDto> getOrdersByUserId(Long userId);
+    List<OrderResponseDto> getOrdersByUserId(UUID userId);
 
-    void completeOrder(Long orderId);
+    void completeOrder(UUID orderId);
 
-    void cancelOrder(Long orderId);
+    void cancelOrder(UUID orderId);
 }

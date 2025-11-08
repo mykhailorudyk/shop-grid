@@ -4,7 +4,10 @@ import com.rudyk.shopgrid.ordersservice.entity.Order;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.UUID;
 
-public interface OrdersRepository extends JpaRepository<Order, Long> {
-    List<Order> findByUserId(Long userId);
+public interface OrdersRepository extends JpaRepository<Order, UUID> {
+
+    List<Order> findByUserId(UUID userId);
+
 }

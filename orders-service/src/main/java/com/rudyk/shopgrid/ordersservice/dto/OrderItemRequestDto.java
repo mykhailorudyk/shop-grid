@@ -9,9 +9,7 @@ import java.util.UUID;
 public class OrderItemRequestDto {
 
     private UUID productId;
-
     private Integer quantity;
-
     private BigDecimal priceAtPurchase;
 
 }
