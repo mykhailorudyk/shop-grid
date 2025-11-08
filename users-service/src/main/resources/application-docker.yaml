@@ -1,11 +1,11 @@
 server:
-  port: 8089
+  port: 8090
 
 spring:
   application:
-    name: orders-service
+    name: users-service
   datasource:
-    url: jdbc:postgresql://localhost:5439/orders_db
+    url: jdbc:postgresql://shopgrid-users-postgres:5432/users_db
     username: mike
     password: password
   jpa:
@@ -15,10 +15,3 @@ spring:
         show_sql: true
     hibernate:
       ddl-auto: create
-
-app:
-  services:
-    products:
-      url: http://localhost:8088
-    users:
-      url: http://localhost:8090
