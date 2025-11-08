@@ -1,7 +1,8 @@
 package com.rudyk.shopgrid.ordersservice.service.impl;
 
 import com.rudyk.shopgrid.common.exception.ResourceNotFoundException;
-import com.rudyk.shopgrid.ordersservice.client.product.ProductServiceClient;
+import com.rudyk.shopgrid.ordersservice.client.product.ProductsServiceClient;
+import com.rudyk.shopgrid.ordersservice.client.user.UsersServiceClient;
 import com.rudyk.shopgrid.ordersservice.dto.CreateOrderRequestDto;
 import com.rudyk.shopgrid.ordersservice.dto.OrderResponseDto;
 import com.rudyk.shopgrid.ordersservice.entity.Order;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 
 import static com.rudyk.shopgrid.ordersservice.constant.OrderConstants.ID_FIELD_NAME;
 import static com.rudyk.shopgrid.ordersservice.constant.OrderConstants.ORDER_RESOURCE_NAME;
@@ -28,11 +30,14 @@ import static com.rudyk.shopgrid.ordersservice.constant.OrderConstants.ORDER_RES
 public class OrdersServiceImpl implements OrdersService {
 
     private final OrdersRepository ordersRepository;
-    private final ProductServiceClient productServiceClient;
+    private final ProductsServiceClient productsServiceClient;
+    private final UsersServiceClient usersServiceClient;
 
     @Override
     public OrderResponseDto createOrder(CreateOrderRequestDto requestDto) {
-        // TODO: check for user presence in Users service
+        if (!usersServiceClient.checkIfUserExists(requestDto.getUserId())) {
+            throw new ResourceNotFoundException(ORDER_RESOURCE_NAME, ID_FIELD_NAME, requestDto.getUserId());
+        }
 
         List<OrderItem> orderItems = getOrderItems(requestDto);
 
@@ -51,21 +56,21 @@ public class OrdersServiceImpl implements OrdersService {
     private List<OrderItem> getOrderItems(CreateOrderRequestDto requestDto) {
         return requestDto.getOrderItems()
                 .stream()
-                .filter(item -> productServiceClient
+                .filter(item -> productsServiceClient
                         .checkForProductAvailability(item.getProductId(), item.getQuantity()))
                 .map(OrderItemMapper::mapToEntity)
                 .toList();
     }
 
     @Override
-    public OrderResponseDto getOrderById(Long orderId) {
+    public OrderResponseDto getOrderById(UUID orderId) {
         return ordersRepository.findById(orderId)
                 .map(OrderMapper::mapToDto)
                 .orElseThrow(() -> new ResourceNotFoundException(ORDER_RESOURCE_NAME, ID_FIELD_NAME, orderId));
     }
 
     @Override
-    public List<OrderResponseDto> getOrdersByUserId(Long userId) {
+    public List<OrderResponseDto> getOrdersByUserId(UUID userId) {
         return ordersRepository.findByUserId(userId)
                 .stream()
                 .map(OrderMapper::mapToDto)
@@ -73,16 +78,16 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public void completeOrder(Long orderId) {
+    public void completeOrder(UUID orderId) {
         changeOrderStatus(orderId, OrderStatus.COMPLETED);
     }
 
     @Override
-    public void cancelOrder(Long orderId) {
+    public void cancelOrder(UUID orderId) {
         changeOrderStatus(orderId, OrderStatus.CANCELED);
     }
 
-    private void changeOrderStatus(Long orderId, OrderStatus completed) {
+    private void changeOrderStatus(UUID orderId, OrderStatus completed) {
         ordersRepository.findById(orderId).ifPresentOrElse(order -> {
             order.setStatus(completed);
             ordersRepository.save(order);

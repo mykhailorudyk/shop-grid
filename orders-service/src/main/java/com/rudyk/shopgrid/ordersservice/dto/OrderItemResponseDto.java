@@ -9,7 +9,7 @@ import java.util.UUID;
 @Data @Builder
 public class OrderItemResponseDto {
 
-    private Long id;
+    private UUID id;
     private UUID productId;
     private Integer quantity;
     private BigDecimal priceAtPurchase;
