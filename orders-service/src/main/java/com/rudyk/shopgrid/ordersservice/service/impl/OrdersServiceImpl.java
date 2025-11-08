@@ -14,11 +14,15 @@ import com.rudyk.shopgrid.ordersservice.repository.OrdersRepository;
 import com.rudyk.shopgrid.ordersservice.service.OrdersService;
 import com.rudyk.shopgrid.ordersservice.util.OrderServiceUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.math.BigDecimal;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import static com.rudyk.shopgrid.ordersservice.constant.OrderConstants.ID_FIELD_NAME;
@@ -34,9 +38,9 @@ public class OrdersServiceImpl implements OrdersService {
     private final UsersServiceClient usersServiceClient;
 
     @Override
-    public OrderResponseDto createOrder(CreateOrderRequestDto requestDto) {
-        if (!usersServiceClient.checkIfUserExists(requestDto.getUserId())) {
-            throw new ResourceNotFoundException(ORDER_RESOURCE_NAME, ID_FIELD_NAME, requestDto.getUserId());
+    public OrderResponseDto createOrder(CreateOrderRequestDto requestDto, String authenticatedUserId) {
+        if (!usersServiceClient.checkIfUserExists(authenticatedUserId)) {
+            throw new ResourceNotFoundException(ORDER_RESOURCE_NAME, ID_FIELD_NAME, authenticatedUserId);
         }
 
         List<OrderItem> orderItems = getOrderItems(requestDto);
@@ -44,7 +48,7 @@ public class OrdersServiceImpl implements OrdersService {
         BigDecimal totalPrice = OrderServiceUtil.calculateOrderTotalPrice(orderItems);
 
         Order order = new Order();
-        order.setUserId(requestDto.getUserId());
+        order.setUserId(authenticatedUserId);
         order.setTotalPrice(totalPrice);
         order.setOrderItems(orderItems);
         orderItems.forEach(orderItem -> orderItem.setOrder(order));
@@ -70,11 +74,33 @@ public class OrdersServiceImpl implements OrdersService {
     }
 
     @Override
-    public List<OrderResponseDto> getOrdersByUserId(UUID userId) {
+    public List<OrderResponseDto> getOrdersByUserId(String userId, Jwt jwt) {
+        checkPermission(userId, jwt);
         return ordersRepository.findByUserId(userId)
                 .stream()
                 .map(OrderMapper::mapToDto)
                 .toList();
+    }
+
+    @SuppressWarnings("unchecked")
+    private void checkPermission(String requestedUserId, Jwt jwt) {
+        String authenticatedUserId = jwt.getSubject();
+        if (authenticatedUserId.equals(requestedUserId)) {
+            return;
+        }
+        Object realmAccessProp = jwt.getClaims().get("realm_access");
+        if (realmAccessProp instanceof Map) {
+            Map<String, Object> realmAccess = (Map<String, Object>) realmAccessProp;
+            Object rolesProp = realmAccess.get("roles");
+            if (rolesProp instanceof List) {
+                Collection<String> roles = (Collection<String>) rolesProp;
+                if (roles.contains("admin")) {
+                    return;
+                }
+            }
+        }
+
+        throw new AccessDeniedException("Access Denied: You do not have permission to access these resource");
     }
 
     @Override

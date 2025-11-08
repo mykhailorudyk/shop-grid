@@ -24,7 +24,7 @@ public class UsersServiceClient {
         this.USERS_SERVICE_URL = usersServiceUrl;
     }
 
-    public boolean checkIfUserExists(UUID userId) {
+    public boolean checkIfUserExists(String userId) {
         String url = USERS_SERVICE_URL + USERS_BASE_PATH + "{id}";
         try {
             Object user = webClient.get()

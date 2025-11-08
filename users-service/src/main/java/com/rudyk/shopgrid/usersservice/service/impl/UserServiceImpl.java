@@ -12,8 +12,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import java.util.UUID;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -22,7 +20,7 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Override
-    public UserResponseDto getUserById(UUID id) {
+    public UserResponseDto getUserById(String id) {
         return userRepository.findById(id).map(UserMappper::mapToDto)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }

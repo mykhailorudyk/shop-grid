@@ -13,7 +13,7 @@ import java.util.UUID;
 public class OrderResponseDto {
 
     private UUID id;
-    private UUID userId;
+    private String userId;
     private BigDecimal totalPrice;
     private OrderStatus status;
     private LocalDateTime orderCreatedAt;

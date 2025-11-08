@@ -6,6 +6,8 @@ import com.rudyk.shopgrid.ordersservice.service.OrdersService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -24,8 +26,10 @@ public class OrdersController {
     private final OrdersService ordersService;
 
     @PostMapping
-    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto requestDto) {
-        return new ResponseEntity<>(ordersService.createOrder(requestDto), HttpStatus.CREATED);
+    public ResponseEntity<OrderResponseDto> createOrder(@RequestBody CreateOrderRequestDto requestDto,
+                                                        @AuthenticationPrincipal Jwt jwt) {
+        String authenticatedUserId = jwt.getSubject();
+        return new ResponseEntity<>(ordersService.createOrder(requestDto, authenticatedUserId), HttpStatus.CREATED);
     }
 
     @GetMapping("/{orderId}")
@@ -34,8 +38,9 @@ public class OrdersController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@PathVariable("userId") UUID userId) {
-        return ResponseEntity.ok(ordersService.getOrdersByUserId(userId));
+    public ResponseEntity<List<OrderResponseDto>> getAllOrders(@PathVariable("userId") String userId,
+                                                               @AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(ordersService.getOrdersByUserId(userId, jwt));
     }
 
     @PostMapping("{id}/complete")
