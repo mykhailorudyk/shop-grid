@@ -29,3 +29,6 @@ keycloak:
     realm: ShopGrid
     client-id: users-service-client
     client-secret: 7yW08ab2eUqUktDTSHCrSu2FyHsVt4j8
+  login:
+    token-url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/token
+    client-id: shopgrid-frontend
