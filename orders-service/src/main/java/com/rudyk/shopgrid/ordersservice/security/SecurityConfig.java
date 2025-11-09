@@ -1,6 +1,7 @@
 package com.rudyk.shopgrid.ordersservice.security;
 
 import com.rudyk.shopgrid.common.security.converter.KeycloakRoleConverter;
+import com.rudyk.shopgrid.common.security.handler.LoggingAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -13,6 +14,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final LoggingAccessDeniedHandler loggingAccessDeniedHandler;
+
+    public SecurityConfig(LoggingAccessDeniedHandler loggingAccessDeniedHandler) {
+        this.loggingAccessDeniedHandler = loggingAccessDeniedHandler;
+    }
+
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http
@@ -23,7 +30,9 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .oauth2ResourceServer(oauth2 ->
                         oauth2.jwt(jwt ->
-                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                                jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(loggingAccessDeniedHandler));
         return http.build();
     }
 
