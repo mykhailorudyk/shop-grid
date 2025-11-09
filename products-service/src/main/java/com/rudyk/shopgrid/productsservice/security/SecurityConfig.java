@@ -23,6 +23,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "api/v1/products").hasAnyRole("ADMIN")
                         .requestMatchers(HttpMethod.PUT, "api/v1/products/**").hasAnyRole("ADMIN")
                         .requestMatchers(HttpMethod.DELETE, "api/v1/products/**").hasAnyRole("ADMIN")
+                        .requestMatchers("/actuator/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .oauth2ResourceServer(oauth2 ->

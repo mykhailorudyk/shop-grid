@@ -17,3 +17,12 @@ keycloak:
   login:
     token-url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/token
     client-id: shopgrid-frontend
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}
