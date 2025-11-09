@@ -20,8 +20,6 @@ services:
     container_name: products-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    ports:
-      - "8088:8088"
     networks:
       - shopgrid-network
     depends_on:
@@ -48,8 +46,6 @@ services:
     container_name: orders-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    ports:
-      - "8089:8089"
     networks:
       - shopgrid-network
     depends_on:
@@ -76,8 +72,6 @@ services:
     container_name: users-service
     environment:
       - SPRING_PROFILES_ACTIVE=docker
-    ports:
-      - "8090:8090"
     networks:
       - shopgrid-network
     depends_on:
@@ -116,6 +110,22 @@ services:
       - keycloak-postgres-volume:/var/lib/postgresql/data
     networks:
       - shopgrid-network
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: api-gateway/Dockerfile
+    container_name: api-gateway
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+    ports:
+      - "8080:8080"
+    networks:
+      - shopgrid-network
+    depends_on:
+      - users-service
+      - products-service
+      - orders-service
 
 networks:
   shopgrid-network:

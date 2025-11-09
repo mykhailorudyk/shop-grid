@@ -53,3 +53,8 @@ build/
 /orders-service/mvnw
 /orders-service/mvnw.cmd
 /.idea/
+/api-gateway/.gitattributes
+/api-gateway/.gitignore
+/api-gateway/mvnw
+/api-gateway/mvnw.cmd
+/api-gateway/.mvn/
