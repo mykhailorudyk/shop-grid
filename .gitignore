@@ -58,3 +58,4 @@ build/
 /api-gateway/mvnw
 /api-gateway/mvnw.cmd
 /api-gateway/.mvn/
+/.env

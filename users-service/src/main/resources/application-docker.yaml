@@ -2,20 +2,6 @@ server:
   port: 8090
 
 spring:
-  application:
-    name: users-service
-  datasource:
-    url: jdbc:postgresql://shopgrid-users-postgres:5432/users_db
-    username: mike
-    password: password
-  jpa:
-    properties:
-      hibernate:
-        format_sql: true
-        show_sql: true
-    hibernate:
-      ddl-auto: create
-
   security:
     oauth2:
       resourceserver:
@@ -28,7 +14,6 @@ keycloak:
     server-url: http://keycloak:8080
     realm: ShopGrid
     client-id: users-service-client
-    client-secret: 7yW08ab2eUqUktDTSHCrSu2FyHsVt4j8
   login:
     token-url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/token
     client-id: shopgrid-frontend

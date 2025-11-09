@@ -5,8 +5,8 @@ services:
     ports:
       - "5438:5432"
     environment:
-      - POSTGRES_USER=mike
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${SHOPGRID_PRODUCTS_POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${SHOPGRID_PRODUCTS_POSTGRES_PASSWORD}
       - POSTGRES_DB=products_db
     volumes:
       - shopgrid-products-postgres-volume:/var/lib/postgresql/data
@@ -19,8 +19,8 @@ services:
     ports:
       - "5439:5432"
     environment:
-      - POSTGRES_USER=mike
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${SHOPGRID_ORDERS_POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${SHOPGRID_ORDERS_POSTGRES_PASSWORD}
       - POSTGRES_DB=orders_db
     volumes:
       - shopgrid-orders-postgres-volume:/var/lib/postgresql/data
@@ -33,8 +33,8 @@ services:
     ports:
       - "5440:5432"
     environment:
-      - POSTGRES_USER=mike
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_USER=${SHOPGRID_USERS_POSTGRES_USERNAME}
+      - POSTGRES_PASSWORD=${SHOPGRID_USERS_POSTGRES_PASSWORD}
       - POSTGRES_DB=users_db
     volumes:
       - shopgrid-users-postgres-volume:/var/lib/postgresql/data
