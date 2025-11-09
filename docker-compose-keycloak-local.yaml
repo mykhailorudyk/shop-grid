@@ -83,6 +83,40 @@ services:
     depends_on:
       - shopgrid-users-postgres
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:24.0.4
+    container_name: keycloak
+    environment:
+      - KEYCLOAK_ADMIN=admin
+      - KEYCLOAK_ADMIN_PASSWORD=admin
+      - KC_DB=postgres
+      - KC_HOSTNAME=localhost # for local development
+      - KC_HOSTNAME_PORT=8180
+      - KC_DB_URL_HOST=keycloak-postgres
+      - KC_DB_URL_DATABASE=keycloak_db
+      - KC_DB_USERNAME=keycloak_user
+      - KC_DB_PASSWORD=keycloak_password
+      - KC_PROXY=edge
+    ports:
+      - "8180:8080"
+    networks:
+      - shopgrid-network
+    depends_on:
+      - keycloak-postgres
+    command: start-dev
+
+  keycloak-postgres:
+    image: postgres:18-alpine
+    container_name: keycloak-postgres
+    environment:
+      - POSTGRES_DB=keycloak_db
+      - POSTGRES_USER=keycloak_user
+      - POSTGRES_PASSWORD=keycloak_password
+    volumes:
+      - keycloak-postgres-volume:/var/lib/postgresql/data
+    networks:
+      - shopgrid-network
+
 networks:
   shopgrid-network:
     driver: bridge
@@ -93,4 +127,6 @@ volumes:
   shopgrid-orders-postgres-volume:
     driver: local
   shopgrid-users-postgres-volume:
+    driver: local
+  keycloak-postgres-volume:
     driver: local

@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.UUID;
-
 @RestController
 @RequestMapping("/api/v1/users")
 @RequiredArgsConstructor
@@ -23,7 +21,7 @@ public class UserController {
     private final UserService userService;
 
     @GetMapping("{id}")
-    public ResponseEntity<UserResponseDto> findById(@PathVariable("id") UUID id) {
+    public ResponseEntity<UserResponseDto> findById(@PathVariable("id") String id) {
         UserResponseDto responseDto = userService.getUserById(id);
         return ResponseEntity.ok(responseDto);
     }

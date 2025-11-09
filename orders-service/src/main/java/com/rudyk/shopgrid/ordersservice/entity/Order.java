@@ -30,7 +30,7 @@ public class Order {
     @Id
     private UUID id;
     @Column(nullable = false)
-    private UUID userId;
+    private String userId;
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL)
     private List<OrderItem> orderItems;
     @Column(nullable = false)
