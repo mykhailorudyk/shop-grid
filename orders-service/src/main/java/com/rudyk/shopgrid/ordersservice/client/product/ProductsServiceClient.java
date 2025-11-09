@@ -1,5 +1,6 @@
 package com.rudyk.shopgrid.ordersservice.client.product;
 
+import com.rudyk.shopgrid.common.security.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,22 +26,26 @@ public class ProductsServiceClient {
     }
 
     public boolean checkForProductAvailability(UUID productId, Integer quantity) {
-        String url = PRODUCTS_SERVICE_URL + PRODUCTS_BASE_PATH + "{id}/availability?quantity={quantity}";
-        try {
-            Boolean isAvailable = webClient.get()
-                    .uri(url, productId, quantity)
-                    .retrieve()
-                    .bodyToMono(Boolean.class)
-                    .block();
-            return Boolean.TRUE.equals(isAvailable);
-        } catch (WebClientResponseException.NotFound e) {
-            LOGGER.warn("Product with id {} not found in Products service", productId);
-            return false;
-        } catch (Exception e) {
-            LOGGER.error("Error while checking product availability for product id {}: {}", productId, e.getMessage());
-            e.printStackTrace();
-            return false;
-        }
+        return JwtUtils.findJwtTokenFromContext().map(jwtToken -> {
+            String url = PRODUCTS_SERVICE_URL + PRODUCTS_BASE_PATH + "{id}/availability?quantity={quantity}";
+            try {
+                Boolean isAvailable = webClient.get()
+                        .uri(url, productId, quantity)
+                        .headers(h -> h.setBearerAuth(jwtToken))
+                        .retrieve()
+                        .bodyToMono(Boolean.class)
+                        .block();
+                return Boolean.TRUE.equals(isAvailable);
+            } catch (WebClientResponseException.NotFound e) {
+                LOGGER.warn("Product with id {} not found in Products service", productId);
+                return false;
+            } catch (Exception e) {
+                LOGGER.error("Error while checking product availability for product id {}: {}", productId, e.getMessage());
+                e.printStackTrace();
+                return false;
+            }
+        }).orElse(false);
+
     }
 
 }

@@ -1,13 +1,12 @@
 package com.rudyk.shopgrid.ordersservice.client.user;
 
+import com.rudyk.shopgrid.common.security.util.JwtUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.UUID;
 
 @Component
 public class UsersServiceClient {
@@ -25,21 +24,24 @@ public class UsersServiceClient {
     }
 
     public boolean checkIfUserExists(String userId) {
-        String url = USERS_SERVICE_URL + USERS_BASE_PATH + "{id}";
-        try {
-            Object user = webClient.get()
+        return JwtUtils.findJwtTokenFromContext().map(jwtToken -> {
+            String url = USERS_SERVICE_URL + USERS_BASE_PATH + "{id}";
+            try {
+                webClient.get()
                     .uri(url, userId)
+                    .headers(h -> h.setBearerAuth(jwtToken))
                     .retrieve()
                     .bodyToMono(Object.class)
                     .block();
 
-            return Boolean.TRUE;
-        } catch (WebClientResponseException.NotFound e) {
-            return Boolean.FALSE;
-        } catch (Exception e) {
-            LOGGER.error("Error occurred while checking if user with id {} exists", userId, e);
-            return Boolean.FALSE;
-        }
+                return Boolean.TRUE;
+            } catch (WebClientResponseException.NotFound e) {
+                return Boolean.FALSE;
+            } catch (Exception e) {
+                LOGGER.error("Error occurred while checking if user with id {} exists", userId, e);
+                return Boolean.FALSE;
+            }
+        }).orElse(false);
     }
 
 }
