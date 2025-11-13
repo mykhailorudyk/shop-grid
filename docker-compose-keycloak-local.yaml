@@ -203,6 +203,15 @@ services:
       - loki
       - jaeger
 
+  redis:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
+    image: redis:7-alpine
+    container_name: redis
+    ports:
+      - "6379:6379"
+
 networks:
   shopgrid-network:
     driver: bridge
