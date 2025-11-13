@@ -1,0 +1,12 @@
+services:
+  base-shopgrid:
+    networks:
+      - shopgrid-network
+
+  base-shopgrid-microservice:
+    extends:
+      service: base-shopgrid
+    environment:
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_METRICS_EXPORTER=none
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger:4318

@@ -1,5 +1,8 @@
 services:
   shopgrid-products-postgres:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     container_name: shopgrid-products-postgres
     image: postgres:18-alpine
     ports:
@@ -10,10 +13,11 @@ services:
       - POSTGRES_DB=products_db
     volumes:
       - shopgrid-products-postgres-volume:/var/lib/postgresql/data
-    networks:
-      - shopgrid-network
 
   products-service:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid-microservice
     build:
       context: .
       dockerfile: products-service/Dockerfile
@@ -23,12 +27,14 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shopgrid-products-postgres:5432/products_db
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_PRODUCTS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_PRODUCTS_POSTGRES_PASSWORD}
-    networks:
-      - shopgrid-network
+      - OTEL_SERVICE_NAME=products-service
     depends_on:
       - shopgrid-products-postgres
 
   shopgrid-orders-postgres:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     container_name: shopgrid-orders-postgres
     image: postgres:18-alpine
     ports:
@@ -39,10 +45,11 @@ services:
       - POSTGRES_DB=orders_db
     volumes:
       - shopgrid-orders-postgres-volume:/var/lib/postgresql/data
-    networks:
-      - shopgrid-network
 
   orders-service:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid-microservice
     build:
       context: .
       dockerfile: orders-service/Dockerfile
@@ -52,12 +59,14 @@ services:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shopgrid-orders-postgres:5432/orders_db
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_ORDERS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_ORDERS_POSTGRES_PASSWORD}
-    networks:
-      - shopgrid-network
+      - OTEL_SERVICE_NAME=orders-service
     depends_on:
       - shopgrid-orders-postgres
 
   shopgrid-users-postgres:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     container_name: shopgrid-users-postgres
     image: postgres:18-alpine
     ports:
@@ -68,10 +77,11 @@ services:
       - POSTGRES_DB=users_db
     volumes:
       - shopgrid-users-postgres-volume:/var/lib/postgresql/data
-    networks:
-      - shopgrid-network
 
   users-service:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid-microservice
     build:
       context: .
       dockerfile: users-service/Dockerfile
@@ -82,12 +92,14 @@ services:
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_USERS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_USERS_POSTGRES_PASSWORD}
       - KEYCLOAK_ADMIN_CLIENT-SECRET=${KEYCLOAK_USERS_ADMIN_CLIENT_SECRET}
-    networks:
-      - shopgrid-network
+      - OTEL_SERVICE_NAME=users-service
     depends_on:
       - shopgrid-users-postgres
 
   keycloak:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     image: quay.io/keycloak/keycloak:24.0.4
     container_name: keycloak
     environment:
@@ -103,13 +115,14 @@ services:
       - KC_PROXY=edge
     ports:
       - "8180:8080"
-    networks:
-      - shopgrid-network
     depends_on:
       - keycloak-postgres
     command: start-dev
 
   keycloak-postgres:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     image: postgres:18-alpine
     container_name: keycloak-postgres
     environment:
@@ -118,26 +131,29 @@ services:
       - POSTGRES_PASSWORD=${KEYCLOAK_DB_PASSWORD}
     volumes:
       - keycloak-postgres-volume:/var/lib/postgresql/data
-    networks:
-      - shopgrid-network
 
   api-gateway:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid-microservice
     build:
       context: .
       dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     environment:
       - SPRING_PROFILES_ACTIVE=docker
+      - OTEL_SERVICE_NAME=api-gateway
     ports:
       - "8080:8080"
-    networks:
-      - shopgrid-network
     depends_on:
       - users-service
       - products-service
       - orders-service
 
   prometheus:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     image: prom/prometheus:v2.47.2
     container_name: prometheus
     ports:
@@ -145,34 +161,47 @@ services:
     volumes:
       - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus-data:/prometheus
-    networks:
-      - shopgrid-network
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
 
   loki:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     image: grafana/loki:2.9.4
     container_name: loki
     ports:
       - "3100:3100"
     volumes:
       - loki-data:/loki
-    networks:
-      - shopgrid-network
     command:
       - '--config.file=/etc/loki/local-config.yaml'
 
+  jaeger:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
+    image: jaegertracing/all-in-one:1.53
+    container_name: jaeger
+    ports:
+      - "9411:9411"
+      - "16686:16686"
+      - "4318:4318"
+
   grafana:
+    extends:
+      file: docker-compose.common.yaml
+      service: base-shopgrid
     image: grafana/grafana:10.2.2
     container_name: grafana
     ports:
       - "3000:3000"
     volumes:
       - grafana-data:/var/lib/grafana
-    networks:
-      - shopgrid-network
     depends_on:
       - prometheus
+      - loki
+      - jaeger
 
 networks:
   shopgrid-network:
