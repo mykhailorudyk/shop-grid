@@ -8,3 +8,12 @@ spring:
         jwt:
           issuer-uri: http://localhost:8180/realms/ShopGrid
           jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

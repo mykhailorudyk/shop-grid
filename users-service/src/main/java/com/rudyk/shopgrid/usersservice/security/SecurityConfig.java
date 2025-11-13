@@ -1,6 +1,7 @@
 package com.rudyk.shopgrid.usersservice.security;
 
 import com.rudyk.shopgrid.common.security.converter.KeycloakRoleConverter;
+import com.rudyk.shopgrid.common.security.handler.LoggingAccessDeniedHandler;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -16,6 +17,12 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final LoggingAccessDeniedHandler loggingAccessDeniedHandler;
+
+    public SecurityConfig(LoggingAccessDeniedHandler loggingAccessDeniedHandler) {
+        this.loggingAccessDeniedHandler = loggingAccessDeniedHandler;
+    }
+
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
         http.csrf(AbstractHttpConfigurer::disable)
@@ -26,11 +33,14 @@ public class SecurityConfig {
                 .requestMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasRole("ADMIN")
                 .requestMatchers(HttpMethod.GET, "/api/v1/users/**").hasAnyRole("USER", "ADMIN")
                 .requestMatchers(HttpMethod.PUT, "/api/v1/users/**").hasAnyRole("USER", "ADMIN")
+                .requestMatchers("/actuator/**").permitAll()
                 .anyRequest().authenticated()
             )
             .oauth2ResourceServer(oauth2 ->
-                    oauth2.jwt(jwt ->
-                            jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+                 oauth2.jwt(jwt ->
+                         jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())))
+            .exceptionHandling(exception -> exception
+                     .accessDeniedHandler(loggingAccessDeniedHandler));
         return http.build();
     }
 

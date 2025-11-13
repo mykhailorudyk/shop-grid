@@ -1,0 +1,12 @@
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'shopgrid-services'
+    metrics_path: /actuator/prometheus
+    static_configs:
+      - targets:
+          - 'api-gateway:8080'
+          - 'products-service:8088'
+          - 'orders-service:8089'
+          - 'users-service:8090'
