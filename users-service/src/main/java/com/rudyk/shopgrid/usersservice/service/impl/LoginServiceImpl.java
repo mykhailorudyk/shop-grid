@@ -2,7 +2,10 @@ package com.rudyk.shopgrid.usersservice.service.impl;
 
 import com.rudyk.shopgrid.usersservice.dto.LoginRequestDto;
 import com.rudyk.shopgrid.usersservice.service.LoginService;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
+import jakarta.ws.rs.ServiceUnavailableException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
@@ -12,6 +15,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class LoginServiceImpl implements LoginService {
 
     private final WebClient webClient;
@@ -23,6 +27,7 @@ public class LoginServiceImpl implements LoginService {
     private String clientId;
 
     @Override
+    @CircuitBreaker(name = "keycloak_cb", fallbackMethod = "loginFallback")
     public Object login(LoginRequestDto loginRequestDto) {
         MultiValueMap<String, String> formData = new LinkedMultiValueMap<>();
         formData.add("grant_type", "password");
@@ -41,6 +46,11 @@ public class LoginServiceImpl implements LoginService {
         } catch (Exception e) {
             throw new SecurityException(e.getMessage());
         }
+    }
+
+    private String loginFallback(LoginRequestDto loginRequestDto, Throwable throwable) {
+        log.error("Keycloak is unavailable. Fallback method invoked for user: {}", loginRequestDto.getUsername());
+        throw new ServiceUnavailableException("Keycloak is currently unavailable. Please try again later.");
     }
 
 }
