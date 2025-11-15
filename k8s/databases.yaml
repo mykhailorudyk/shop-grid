@@ -1,0 +1,193 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: users-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopgrid-users-postgres
+  template:
+    metadata:
+      labels:
+        app: shopgrid-users-postgres
+    spec:
+      containers:
+        - name: shopgrid-users-postgres
+          image: postgres:18
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: users-db-secret
+          env:
+            - name: POSTGRES_DB
+              value: "users_db"
+          volumeMounts:
+            - name: users-db-storage
+              mountPath: /var/lib/postgresql
+
+      volumes:
+        - name: users-db-storage
+          persistentVolumeClaim:
+            claimName: users-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopgrid-users-postgres # DNS-ім'я
+spec:
+  selector:
+    app: shopgrid-users-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: products-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopgrid-products-postgres
+  template:
+    metadata:
+      labels:
+        app: shopgrid-products-postgres
+    spec:
+      containers:
+        - name: shopgrid-products-postgres
+          image: postgres:18
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: products-db-secret
+          env:
+            - name: POSTGRES_DB
+              value: "orders_db"
+          volumeMounts:
+            - name: products-db-volume
+              mountPath: /var/lib/postgresql
+
+      volumes:
+        - name: products-db-volume
+          persistentVolumeClaim:
+            claimName: products-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopgrid-products-postgres
+spec:
+  selector:
+    app: shopgrid-products-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: orders-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: shopgrid-orders-postgres
+  template:
+    metadata:
+      labels:
+        app: shopgrid-orders-postgres
+    spec:
+      containers:
+        - name: shopgrid-orders-postgres
+          image: postgres:18
+          ports:
+            - containerPort: 5432
+          envFrom:
+            - secretRef:
+                name: orders-db-secret
+          env:
+            - name: POSTGRES_DB
+              value: "orders_db"
+          volumeMounts:
+            - name: orders-db-volume
+              mountPath: /var/lib/postgresql
+
+      volumes:
+        - name: orders-db-volume
+          persistentVolumeClaim:
+            claimName: orders-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: shopgrid-orders-postgres
+spec:
+  selector:
+    app: shopgrid-orders-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keycloak-db-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keycloak-postgres
+  template:
+    metadata:
+      labels:
+        app: keycloak-postgres
+    spec:
+      containers:
+        - name: keycloak-postgres
+          image: postgres:18
+          ports:
+            - containerPort: 5432
+          env:
+            - name: POSTGRES_DB
+              value: "keycloak_db"
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: KC_DB_USERNAME
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: keycloak-db-secret
+                  key: KC_DB_PASSWORD
+          volumeMounts:
+            - name: keycloak-db-storage
+              mountPath: /var/lib/postgresql
+
+      volumes:
+        - name: keycloak-db-storage
+          persistentVolumeClaim:
+            claimName: keycloak-db-pvc
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak-postgres
+spec:
+  selector:
+    app: keycloak-postgres
+  ports:
+    - port: 5432
+      targetPort: 5432
