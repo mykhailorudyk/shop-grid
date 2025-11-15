@@ -28,6 +28,8 @@ public class SecurityConfig {
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
+                        .pathMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                         .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
                 )

@@ -17,6 +17,9 @@ keycloak:
   login:
     token-url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/token
     client-id: shopgrid-frontend
+    client-secret: ${KEYCLOAK_LOGIN_CLIENT-SECRET}
+  logout:
+    url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/revoke
 
 management:
   endpoints:
