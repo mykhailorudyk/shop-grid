@@ -41,3 +41,10 @@ spec:
                 name: products-service
                 port:
                   number: 8088
+          - path: /api/v1/orders
+            pathType: Prefix
+            backend:
+              service:
+                name: orders-service
+                port:
+                  number: 8089
