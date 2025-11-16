@@ -15,9 +15,10 @@ spec:
       containers:
         - name: keycloak
           image: quay.io/keycloak/keycloak:24.0.4
-          command:
-            - "/opt/keycloak/bin/kc.sh"
+          command: ["/opt/keycloak/bin/kc.sh"]
+          args:
             - "start-dev"
+            - "--import-realm"
           ports:
             - containerPort: 8080
           envFrom:
@@ -26,8 +27,14 @@ spec:
             - secretRef:
                 name: keycloak-admin-secret
           env:
+            - name: KC_HTTPS_REQUIRED
+              value: "none"
+            - name: KC_HOSTNAME_STRICT_HTTPS
+              value: "false"
             - name: KC_PROXY
               value: "edge"
+            - name: KC_PROXY_HEADERS
+              value: "forwarded"
             - name: KC_HOSTNAME
               value: keycloak.shopgrid
             - name: KC_HOSTNAME_PORT
@@ -38,6 +45,19 @@ spec:
               value: "keycloak-postgres"
             - name: KC_DB_URL_DATABASE
               value: "keycloak_db"
+            - name: KC_IMPORT_FILE
+              value: "/opt/keycloak/data/import/shopgrid-realm-export.json"
+          volumeMounts:
+            - name: realm-import-volume
+              mountPath: "/opt/keycloak/data/import"
+              readOnly: true
+      volumes:
+        - name: realm-import-volume
+          configMap:
+            name: keycloak-realm-import
+            items:
+              - key: shopgrid-realm-export.json
+                path: shopgrid-realm-export.json
 
 ---
 apiVersion: v1
