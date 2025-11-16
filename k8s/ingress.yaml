@@ -34,3 +34,10 @@ spec:
                 name: users-service
                 port:
                   number: 8090
+          - path: /api/v1/products
+            pathType: Prefix
+            backend:
+              service:
+                name: products-service
+                port:
+                  number: 8088

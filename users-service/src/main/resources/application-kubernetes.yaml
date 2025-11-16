@@ -6,7 +6,7 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://keycloak.shopgrid/realms/ShopGrid
+          issuer-uri: http://keycloak.shopgrid:80/realms/ShopGrid
           jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
 
 keycloak:
