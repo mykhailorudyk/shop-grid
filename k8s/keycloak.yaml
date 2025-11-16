@@ -28,6 +28,10 @@ spec:
           env:
             - name: KC_PROXY
               value: "edge"
+            - name: KC_HOSTNAME
+              value: keycloak.shopgrid
+            - name: KC_HOSTNAME_PORT
+              value: "80"
             - name: KC_DB
               value: "postgres"
             - name: KC_DB_URL_HOST
@@ -41,11 +45,9 @@ kind: Service
 metadata:
   name: keycloak
 spec:
-  type: NodePort
   selector:
     app: keycloak
   ports:
-    - name: http
-      port: 8080
+    - port: 8080
       targetPort: 8080
-      nodePort: 30180
+#      nodePort: 30180
