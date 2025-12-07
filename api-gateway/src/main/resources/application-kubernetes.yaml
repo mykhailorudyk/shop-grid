@@ -1,0 +1,42 @@
+spring:
+  config:
+    activate:
+      on-profile: kubernetes
+  cloud:
+    gateway:
+      routes:
+        - id: users-service
+          uri: http://users-service:8090
+          predicates:
+            - Path=/api/v1/users/**
+        - id: auth-service
+          uri: http://api-gateway:8080
+          predicates:
+            - Path=/api/v1/auth/**
+#          default-filters:
+#            - TokenRelay
+#          default-filters:
+#            - name: RequestRateLimiter
+#              args:
+#                rate-limiter: "#{@redisRateLimiter}"
+#                key-resolver: "#{@ipKeyResolver}"
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak.shopgrid:80/realms/ShopGrid
+          jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

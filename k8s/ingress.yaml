@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: shopgrid-ingress
   annotations:
-    nginx.ingress.kubernetes.io/backend-protocol: "HTTP"
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
 spec:
   ingressClassName: nginx
   rules:
@@ -17,6 +17,17 @@ spec:
                 name: keycloak
                 port:
                   number: 8080
+    - host: api.shopgrid
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: api-gateway
+                port:
+                  number: 8080
+#
     - host: api.shopgrid
       http:
         paths:
