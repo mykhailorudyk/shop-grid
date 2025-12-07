@@ -14,4 +14,17 @@ spring:
         format_sql: true
         show_sql: true
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
+
+resilience4j:
+  circuitbreaker:
+    instances:
+      keycloak-cb:
+        register-health-indicator: true
+        sliding-window-type: COUNT_BASED
+        sliding-window-size: 10
+        failure-rate-threshold: 50
+        wait-duration-in-open-state: 10s
+        record-exceptions:
+          - java.net.ConnectException
+          - jakarta.ws.rs.ProcessingException

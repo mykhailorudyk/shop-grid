@@ -1,0 +1,80 @@
+apiVersion: networking.istio.io/v1beta1
+kind: Gateway
+metadata:
+  name: shopgrid-gateway
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway
+  servers:
+    - port:
+        number: 80
+        name: http
+        protocol: HTTP
+      hosts:
+        - "api.shopgrid"
+        - "keycloak.shopgrid"
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: shopgrid-api
+spec:
+  hosts:
+    - "api.shopgrid"
+  gateways:
+    - shopgrid-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /api/v1/auth
+      route:
+        - destination:
+            host: users-service
+            port:
+              number: 8090
+    - match:
+        - uri:
+            prefix: /api/v1/users
+      route:
+        - destination:
+            host: users-service
+            port:
+              number: 8090
+    - match:
+        - uri:
+            prefix: /api/v1/products
+      route:
+        - destination:
+            host: products-service
+            port:
+              number: 8088
+    - match:
+        - uri:
+            prefix: /api/v1/orders
+      route:
+        - destination:
+            host: orders-service
+            port:
+              number: 8089
+
+---
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: keycloak
+spec:
+  hosts:
+    - "keycloak.shopgrid"
+  gateways:
+    - shopgrid-gateway
+  http:
+    - match:
+        - uri:
+            prefix: /
+      route:
+        - destination:
+            host: keycloak
+            port:
+              number: 8080

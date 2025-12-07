@@ -1,0 +1,26 @@
+server:
+  port: 8089
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8180/realms/ShopGrid
+          jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
+
+app:
+  services:
+    products:
+      url: http://products-service:8088
+    users:
+      url: http://users-service:8090
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

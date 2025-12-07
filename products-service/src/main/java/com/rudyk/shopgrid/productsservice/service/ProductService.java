@@ -11,12 +11,14 @@ public interface ProductService {
 
     ProductResponseDto getProductById(UUID id);
 
+    Boolean isProductAvailable(UUID id, Integer quantity);
+
     List<ProductResponseDto> getAllProducts();
 
     ProductResponseDto createProduct(CreateProductRequestDto requestDto);
 
     ProductResponseDto updateProduct(UUID id, UpdateProductRequestDto requestDto);
 
-    String deleteProduct(UUID id);
+    void deleteProduct(UUID id);
 
 }
