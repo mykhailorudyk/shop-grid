@@ -23,7 +23,7 @@ services:
       dockerfile: products-service/Dockerfile
     container_name: products-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=kubernetes
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shopgrid-products-postgres:5432/products_db
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_PRODUCTS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_PRODUCTS_POSTGRES_PASSWORD}
@@ -55,7 +55,7 @@ services:
       dockerfile: orders-service/Dockerfile
     container_name: orders-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=kubernetes
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shopgrid-orders-postgres:5432/orders_db
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_ORDERS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_ORDERS_POSTGRES_PASSWORD}
@@ -87,7 +87,7 @@ services:
       dockerfile: users-service/Dockerfile
     container_name: users-service
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=kubernetes
       - SPRING_DATASOURCE_URL=jdbc:postgresql://shopgrid-users-postgres:5432/users_db
       - SPRING_DATASOURCE_USERNAME=${SHOPGRID_USERS_POSTGRES_USERNAME}
       - SPRING_DATASOURCE_PASSWORD=${SHOPGRID_USERS_POSTGRES_PASSWORD}
@@ -142,7 +142,7 @@ services:
       dockerfile: api-gateway/Dockerfile
     container_name: api-gateway
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_PROFILES_ACTIVE=kubernetes
       - OTEL_SERVICE_NAME=api-gateway
     ports:
       - "8080:8080"

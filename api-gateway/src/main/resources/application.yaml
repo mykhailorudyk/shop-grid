@@ -22,20 +22,20 @@ spring:
               uri: http://users-service:8090
               predicates:
                 - Path=/api/v1/users/**, /api/v1/auth/**
-          default-filters:
-            - name: RequestRateLimiter
-              args:
-                rate-limiter: "#{@redisRateLimiter}"
-                key-resolver: "#{@ipKeyResolver}"
+#          default-filters:
+#            - name: RequestRateLimiter
+#              args:
+#                rate-limiter: "#{@redisRateLimiter}"
+#                key-resolver: "#{@ipKeyResolver}"
 
   security:
     oauth2:
       resourceserver:
         jwt:
-          issuer-uri: http://localhost:8180/realms/ShopGrid
+          issuer-uri: http://keycloak.shopgrid:80/realms/ShopGrid
           jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
-
-  data:
-    redis:
-      host: localhost
-      port: 6379
+#
+#  data:
+#    redis:
+#      host: localhost
+#      port: 6379

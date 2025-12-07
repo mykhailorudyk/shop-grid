@@ -1,0 +1,31 @@
+server:
+  port: 8090
+
+spring:
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://keycloak.shopgrid:80/realms/ShopGrid
+          jwk-set-uri: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/certs
+
+keycloak:
+  admin:
+    server-url: http://keycloak:8080
+    realm: ShopGrid
+    client-id: users-service-client
+  login:
+    token-url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/token
+    client-id: shopgrid-frontend
+    client-secret: ${KEYCLOAK_LOGIN_CLIENT-SECRET}
+  logout:
+    url: http://keycloak:8080/realms/ShopGrid/protocol/openid-connect/revoke
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,prometheus
+  metrics:
+    tags:
+      application: ${spring.application.name}

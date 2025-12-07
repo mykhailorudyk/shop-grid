@@ -29,6 +29,8 @@ public class SecurityConfig {
                         .pathMatchers(HttpMethod.POST, "/api/v1/users/register").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/login").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/refresh").permitAll()
+//                        .pathMatchers("/api/v1/products").permitAll()
+//                        .pathMatchers("/api/v1/products/**").permitAll()
                         .pathMatchers(HttpMethod.POST, "/api/v1/auth/logout").authenticated()
                         .pathMatchers("/actuator/**").permitAll()
                         .anyExchange().authenticated()
